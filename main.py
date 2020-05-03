@@ -75,4 +75,5 @@ if __name__ == '__main__':
     parser_register.set_defaults(func=__register)
     parser_notify = subparsers.add_parser('notify')
     parser_notify.set_defaults(func=__notify)
-    parser.parse_args()
+    args = parser.parse_args()
+    args.func(args)
