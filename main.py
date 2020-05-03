@@ -28,15 +28,23 @@ def events():
     headers = request.headers
     if headers['X-Goog-Resource-State'] == 'sync':
         return {'status': 'ok'}
-
-    json = request.json
-    print(json)
-    print(headers)
-    response = requests.post(settings.SLACK_WEBHOOK_URL, data={
-        'text': json
+    response = requests.post(settings.SLACK_WEBHOOK_URL, json={
+        'text': __get_formatted_message(request.json)
     })
     response.raise_for_status()
     return {'status': 'ok'}
+
+
+def __get_formatted_message(json):
+    result = 'New event arrived at ' + json['id']['time'] + '!\n\n'
+    for event in json['events']:
+        result += '*' + event['name'] + '*\n'
+        for param in event['parameters']:
+            if param['name'] == 'organizer_email':
+                result += 'Organizer: ' + param['value'] + '\n'
+            elif param['name'] == 'meeting_code':
+                result += 'Meeting Code: ' + param['value'] + '\n'
+    return result
 
 
 def __notify(args):
