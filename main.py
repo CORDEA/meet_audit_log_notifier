@@ -43,7 +43,7 @@ def __notify(args):
     app.run(debug=True)
 
 
-def __register(args):
+def __get_google_service():
     creds = None
     if os.path.exists(TOKEN_PICKLE):
         with open(TOKEN_PICKLE, 'rb') as token:
@@ -59,8 +59,11 @@ def __register(args):
             creds = flow.run_local_server(port=0)
         with open(TOKEN_PICKLE, 'wb') as token:
             pickle.dump(creds, token)
-    service = build('admin', 'reports_v1', credentials=creds)
-    response = service.activities().watch(
+    return build('admin', 'reports_v1', credentials=creds)
+
+
+def __register(args):
+    response = __get_google_service().activities().watch(
         userKey='all',
         applicationName='meet',
         body={
@@ -69,15 +72,37 @@ def __register(args):
             'id': ID
         }
     ).execute()
-    print(response.resourceUri)
+    print(response)
+
+
+def __unregister(args):
+    channels = __get_google_service().channels()
+    # Admin SDK returns wrong URL.
+    # https://github.com/googleapis/google-api-python-client/issues/403
+    # noinspection PyProtectedMember
+    channels._baseUrl = channels._baseUrl.replace('/admin/reports/v1', '')
+    channels.stop(
+        body={
+            'id': args.id,
+            'resourceId': args.resource_id
+        }
+    ).execute()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
+
     parser_register = subparsers.add_parser('register')
     parser_register.set_defaults(func=__register)
+
+    parser_unregister = subparsers.add_parser('unregister')
+    parser_unregister.add_argument('--id', type=str, help='ID')
+    parser_unregister.add_argument('--resource-id', type=str, help='Resource ID')
+    parser_unregister.set_defaults(func=__unregister)
+
     parser_notify = subparsers.add_parser('notify')
     parser_notify.set_defaults(func=__notify)
+
     args = parser.parse_args()
     args.func(args)
