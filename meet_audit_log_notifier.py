@@ -9,6 +9,8 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+import settings
+
 TOKEN_PICKLE = 'token.pickle'
 ID = uuid4()
 SCOPES = ['https://www.googleapis.com/auth/admin.reports.audit.readonly']
@@ -27,18 +29,16 @@ def events():
     headers = request.headers
     print(json)
     print(headers)
-    requests.post('', data={
+    requests.post(settings.SLACK_WEBHOOK_URL, data={
         'text': json
     })
 
 
 def __notify(args):
-    url = args.url
     app.run(debug=True)
 
 
 def __register(args):
-    url = args.url
     creds = None
     if os.path.exists(TOKEN_PICKLE):
         with open(TOKEN_PICKLE, 'rb') as token:
@@ -59,7 +59,7 @@ def __register(args):
         userKey='all',
         applicationName='meet',
         body={
-            'address': url,
+            'address': settings.CALLBACK_URL,
             'type': 'web_hook',
             'id': ID
         }
@@ -72,9 +72,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
     parser_register = subparsers.add_parser('register')
-    parser_register.add_argument('url', type=str, help='Callback URL')
     parser_register.set_defaults(func=__register)
     parser_notify = subparsers.add_parser('notify')
-    parser_notify.add_argument('url', type=str, help='Slack Incoming Webhook URL')
     parser_notify.set_defaults(func=__notify)
     parser.parse_args()
