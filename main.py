@@ -26,6 +26,7 @@ def index():
 @app.route('/events', methods=['POST'])
 def events():
     headers = request.headers
+    print('ID: ' + headers['X-Goog-Channel-Id'] + '\nResource ID: ' + headers['X-Goog-Resource-Id'])
     if headers['X-Goog-Resource-State'] == 'sync':
         return {'status': 'ok'}
     response = requests.post(settings.SLACK_WEBHOOK_URL, json={
