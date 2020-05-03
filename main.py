@@ -44,6 +44,8 @@ def __get_formatted_message(json):
                 result += 'Organizer: ' + param['value'] + '\n'
             elif param['name'] == 'meeting_code':
                 result += 'Meeting Code: ' + param['value'] + '\n'
+            elif param['name'] == 'is_external':
+                result += 'External User: ' + ('Yes' if param['boolValue'] else 'No') + '\n'
     return result
 
 
