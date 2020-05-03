@@ -32,9 +32,11 @@ def events():
     json = request.json
     print(json)
     print(headers)
-    requests.post(settings.SLACK_WEBHOOK_URL, data={
+    response = requests.post(settings.SLACK_WEBHOOK_URL, data={
         'text': json
     })
+    response.raise_for_status()
+    return {'status': 'ok'}
 
 
 def __notify(args):
