@@ -4,7 +4,7 @@ import pickle
 from uuid import uuid4
 
 import requests
-from flask import Flask, request
+from flask import Flask, request, render_template
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -20,7 +20,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return 'Meet audio log notifier'
+    return render_template('index.html')
 
 
 @app.route('/events', methods=['POST'])
