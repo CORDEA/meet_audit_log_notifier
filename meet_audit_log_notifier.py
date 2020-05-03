@@ -1,3 +1,5 @@
+import argparse
+
 from flask import Flask, request
 
 app = Flask(__name__)
@@ -16,5 +18,15 @@ def events():
     print(headers)
 
 
+def __register(url):
+    pass
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--register', type=str, help='Register callback URL.')
+    args = parser.parse_args()
+    if args.register:
+        __register(args.register)
+    else:
+        app.run(debug=True)
