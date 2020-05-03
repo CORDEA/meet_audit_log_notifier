@@ -32,7 +32,13 @@ def events():
     })
 
 
-def __register(url):
+def __notify(args):
+    url = args.url
+    app.run(debug=True)
+
+
+def __register(args):
+    url = args.url
     creds = None
     if os.path.exists(TOKEN_PICKLE):
         with open(TOKEN_PICKLE, 'rb') as token:
@@ -64,9 +70,11 @@ def __register(url):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--register', type=str, help='Register callback URL.')
-    args = parser.parse_args()
-    if args.register:
-        __register(args.register)
-    else:
-        app.run(debug=True)
+    subparsers = parser.add_subparsers()
+    parser_register = subparsers.add_parser('register')
+    parser_register.add_argument('url', type=str, help='Callback URL')
+    parser_register.set_defaults(func=__register)
+    parser_notify = subparsers.add_parser('notify')
+    parser_notify.add_argument('url', type=str, help='Slack Incoming Webhook URL')
+    parser_notify.set_defaults(func=__notify)
+    parser.parse_args()
