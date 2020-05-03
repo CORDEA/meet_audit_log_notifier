@@ -3,6 +3,7 @@ import os
 import pickle
 from uuid import uuid4
 
+import requests
 from flask import Flask, request
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -26,6 +27,9 @@ def events():
     headers = request.headers
     print(json)
     print(headers)
+    requests.post('', data={
+        'text': json
+    })
 
 
 def __register(url):
