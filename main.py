@@ -12,7 +12,7 @@ from googleapiclient.discovery import build
 import settings
 
 TOKEN_PICKLE = 'token.pickle'
-ID = uuid4()
+ID = str(uuid4())
 SCOPES = ['https://www.googleapis.com/auth/admin.reports.audit.readonly']
 
 app = Flask(__name__)
@@ -55,7 +55,7 @@ def __register(args):
         with open(TOKEN_PICKLE, 'wb') as token:
             pickle.dump(creds, token)
     service = build('admin', 'reports_v1', credentials=creds)
-    response = service.watch(
+    response = service.activities().watch(
         userKey='all',
         applicationName='meet',
         body={
@@ -63,9 +63,8 @@ def __register(args):
             'type': 'web_hook',
             'id': ID
         }
-    )
-    print(response.resouceUri)
-    print(response.address)
+    ).execute()
+    print(response.resourceUri)
 
 
 if __name__ == '__main__':
