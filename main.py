@@ -80,7 +80,7 @@ def __register(args):
             'id': ID
         }
     ).execute()
-    print(response)
+    print('ID: ' + response['id'] + '\nResource ID: ' + response['resourceId'])
 
 
 def __unregister(args):
